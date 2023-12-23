@@ -1,0 +1,38 @@
+import queue
+import threading
+import time
+import random
+
+# Робимо чергу
+request_queue = queue.Queue()
+
+# Генерації заявок
+def random_request():
+    while True:
+        request_number = random.randint(1, 1000)
+        print(f"Request number:{request_number}")
+        
+        request_queue.put(request_number)
+        time.sleep(random.uniform(0.5, 2.5))
+
+#Обробка
+def process_request():
+    while True:
+        try:
+            request_number = request_queue.get(block=False)
+            print(f"Request number in processing:{request_number}")
+            time.sleep(random.uniform(0.2, 1.5))
+        except queue.Empty:
+            print("No pending requests, waiting for requests...")
+            
+            time.sleep(1.5)
+
+if __name__ == "__main__":
+ generate_thread = threading.Thread(target=random_request)
+ process_thread = threading.Thread(target=process_request)
+
+ generate_thread.start()
+ process_thread.start()
+
+ generate_thread.join()
+ process_thread.join()
